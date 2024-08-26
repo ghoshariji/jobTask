@@ -51,7 +51,10 @@ const Login = () => {
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         toast.success("Register Successfully");
-        navigate("/home");
+        setTimeout(() => {
+          navigate("/home");
+        }, 2000);
+        
       } else {
         toast.info("An Error Occured...");
       }
