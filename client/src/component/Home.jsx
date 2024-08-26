@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReactLoading from "react-loading";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   // Fetch user data after login
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
         const token = sessionStorage.getItem("token");
+        if (!token) {
+          toast.error("You are not Authorized");
+          setTimeout(() => {
+            navigate("/");
+          }, 1500);
+
+          return;
+        }
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,6 +54,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+      <ToastContainer />
       {loading ? (
         <ReactLoading type="balls" color="black" height={"20%"} width={"20%"} />
       ) : (
