@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import ReactLoading from "react-loading";
 const Home = () => {
   const [userData, setUserData] = useState({});
+  const [loading, setLoading] = useState(false);
   // Fetch user data after login
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        setLoading(true);
+        const token = sessionStorage.getItem("token");
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -18,7 +20,9 @@ const Home = () => {
           config
         );
         setUserData(response.data.data);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.error("Failed to fetch user data:", error);
       }
     };
@@ -39,37 +43,46 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-lg w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">User Details</h1>
-        <div className="mb-4">
-          <p className="text-lg font-semibold text-gray-600">Name:</p>
-          <p className="text-gray-800">{userData.name}</p>
+      {loading ? (
+        <ReactLoading type="balls" color="black" height={"20%"} width={"20%"} />
+      ) : (
+        <div className="bg-white shadow-md rounded-lg p-6 max-w-lg w-full">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            User Details
+          </h1>
+          <div className="mb-4">
+            <p className="text-lg font-semibold text-gray-600">Name:</p>
+            <p className="text-gray-800">{userData.name}</p>
+          </div>
+
+          <div className="mb-4">
+            <p className="text-lg font-semibold text-gray-600">Email:</p>
+            <p className="text-gray-800">{userData.email}</p>
+          </div>
+          <div className="mb-4">
+            <p className="text-lg font-semibold text-gray-600">
+              Uploaded Document:
+            </p>
+            {userData.docName ? (
+              <>
+                <button
+                  onClick={() =>
+                    handleShow(userData.document.data, userData.ContentType)
+                  }
+                  className="text-blue-500 hover:underline"
+                >
+                  Download PDF
+                </button>
+                <p className="text-lg font-semibold text-gray-600">
+                  {userData.docName}
+                </p>
+              </>
+            ) : (
+              <p className="text-gray-500">No document uploaded.</p>
+            )}
+          </div>
         </div>
-        <div className="mb-4">
-          <p className="text-lg font-semibold text-gray-600">Email:</p>
-          <p className="text-gray-800">{userData.email}</p>
-        </div>
-        <div className="mb-4">
-          <p className="text-lg font-semibold text-gray-600">
-            Uploaded Document:
-          </p>
-          {userData.docName ? (
-            <>
-              <button
-                onClick={() => handleShow(userData.document.data, userData.ContentType)}
-                className="text-blue-500 hover:underline"
-              >
-                Download PDF
-              </button>
-              <p className="text-lg font-semibold text-gray-600">
-                {userData.docName}
-              </p>
-            </>
-          ) : (
-            <p className="text-gray-500">No document uploaded.</p>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };

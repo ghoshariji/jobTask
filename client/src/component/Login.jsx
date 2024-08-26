@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import ReactLoading from 'react-loading';
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -10,11 +11,13 @@ const Login = () => {
     password: "",
     file: null,
   });
+  const [loading,setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -33,6 +36,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const form = new FormData();
     form.append("name", formData.name);
     form.append("email", formData.email);
@@ -49,16 +53,18 @@ const Login = () => {
         config
       );
       if (response.data.success) {
-        localStorage.setItem("token", response.data.token);
+        sessionStorage.setItem("token", response.data.token);
         toast.success("Register Successfully");
         setTimeout(() => {
           navigate("/home");
         }, 2000);
-        
+        setLoading(false)
       } else {
+        setLoading(false)
         toast.info("An Error Occured...");
       }
     } catch (error) {
+      setLoading(false)
       toast.error("Something went Wrong");
       console.error(error);
     }
@@ -67,6 +73,8 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <ToastContainer />
+
+      
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded shadow-md max-w-md w-full"
@@ -143,7 +151,10 @@ const Login = () => {
             <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
           )}
         </div>
-
+        {
+          loading ? <ReactLoading type="balls" color="black" height={'20%'} width={'20%'} /> : null
+        }
+        
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
