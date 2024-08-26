@@ -14,7 +14,7 @@ const Home = () => {
           },
         };
         const response = await axios.get(
-          "http://localhost:5000/v1/api/auth/user",
+          "https://jobtask.onrender.com/v1/api/auth/user",
           config
         );
         setUserData(response.data.data);

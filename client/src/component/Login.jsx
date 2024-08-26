@@ -44,7 +44,7 @@ const Login = () => {
     };
     try {
       const response = await axios.post(
-        "http://localhost:5000/v1/api/auth/signup",
+        "https://jobtask.onrender.com/v1/api/auth/signup",
         form,
         config
       );
